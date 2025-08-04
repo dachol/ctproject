@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나뭇잎 잎맥 종류 판별하기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flexboxgrid@6.3.1/dist/flexboxgrid.min.css" rel="stylesheet">
+    <style>
+        /* Main styling */
+        .leaf-container {
+            transition: all 0.3s ease;
+        }
+        .result-box {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .result-box.show {
+            opacity: 1;
+        }
+        /* Animation for leaves */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .leaf-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header Section -->
+    <header class="bg-green-600 text-white p-4">
+        <div class="container mx-auto">
+            <h1 class="text-2xl font-bold">나뭇잎 잎맥 종류 판별하기</h1>
+            <p class="mt-2">나뭇잎의 크기를 측정하여 잎맥 종류를 판별해보세요</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4">
+        <div class="row">
+            <!-- Input Section -->
+            <div class="col-xs-12 col-md-6 mb-4">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-bold mb-4">측정값 입력</h2>
+                    <div class="mb-4">
+                        <label for="leafLength" class="block mb-2">세로 길이 (cm)</label>
+                        <input type="number" id="leafLength" class="w-full p-2 border rounded" min="0" step="0.1">
+                    </div>
+                    <div class="mb-4">
+                        <label for="leafWidth" class="block mb-2">가로 길이 (cm)</label>
+                        <input type="number" id="leafWidth" class="w-full p-2 border rounded" min="0" step="0.1">
+                    </div>
+                    <button onclick="classifyLeaf()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                        분류하기
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div class="col-xs-12 col-md-6">
+                <div class="bg-white p-6 rounded-lg shadow-md result-box" id="resultBox">
+                    <h2 class="text-xl font-bold mb-4">판별 결과</h2>
+                    <div id="result" class="text-lg"></div>
+                    <div class="leaf-icon text-6xl mt-4">🍃</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Dataset -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4">샘플 데이터</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="p-2">이름</th>
+                            <th class="p-2">세로 길이(cm)</th>
+                            <th class="p-2">가로 길이(cm)</th>
+                            <th class="p-2">잎맥 종류</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sampleData"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sample dataset
+        const sampleLeaves = [
+            { name: "대나무", length: 15, width: 2, type: "parallel" },
+            { name: "단풍나무", length: 12, width: 10, type: "net" },
+            { name: "벼", length: 20, width: 1.5, type: "parallel" },
+            { name: "목련", length: 18, width: 8, type: "net" }
+        ];
+
+        // Populate sample data table
+        window.onload = function() {
+            const tableBody = document.getElementById('sampleData');
+            sampleLeaves.forEach(leaf => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border p-2">${leaf.name}</td>
+                    <td class="border p-2">${leaf.length}</td>
+                    <td class="border p-2">${leaf.width}</td>
+                    <td class="border p-2">${leaf.type === 'parallel' ? '평행맥' : '망상맥'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        };
+
+        // Classification function
+        function classifyLeaf() {
+            const length = parseFloat(document.getElementById('leafLength').value);
+            const width = parseFloat(document.getElementById('leafWidth').value);
+            
+            if (isNaN(length) || isNaN(width)) {
+                alert('올바른 값을 입력해주세요.');
+                return;
+            }
+
+            // Simple classification logic based on length/width ratio
+            const ratio = length / width;
+            const result = ratio > 5 ? 'parallel' : 'net';
+
+            const resultBox = document.getElementById('resultBox');
+            const resultText = document.getElementById('result');
+            
+            resultText.textContent = result === 'parallel' ? 
+                '이 나뭇잎은 평행맥 구조를 가지고 있을 가능성이 높습니다.' : 
+                '이 나뭇잎은 망상맥 구조를 가지고 있을 가능성이 높습니다.';
+            
+            resultBox.classList.add('show');
+        }
+    </script>
+</body>
+</html>
